@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mann Mitra | Your Mental Health Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  
+   <!-- Link CSS -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h2>Mann Mitra</h2>
+    </div>
+    <nav class="navbar">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('services') }}">Services</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+  </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Welcome to Mann Mitra</h1>
+      <h2 style="color: #2d2a4a">Your Friendly Mental Health Companion</h2>
+      <p>
+        Feeling stressed, anxious, or just need someone to talk to? Aasha is your private,
+        24/7 AI-powered mental health assistant that offers comforting conversations whenever
+        you need emotional support.
+      </p>
+      <button class="cta-btn" onclick="document.getElementById('chat').scrollIntoView({ behavior: 'smooth' });">Chat Now</button>
+    </div>
+  </section>
+
+  <section id="chat" class="chat-container">
+    <div class="chat-box" id="chat-box">
+      <div class="chat-msg bot">Hi, I’m Aasha. What’s on your mind today?</div>
+    </div>
+    <div class="typing-indicator" id="typing-indicator">
+      Aasha is typing<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div>    
+    <form class="chat-input" id="chat-form">
+      <input type="text" id="user-input" placeholder="Type your message..." required />
+      <button type="submit">Send</button>
+    </form>
+  </section>
+
+  <script>
+    const chatForm = document.getElementById('chat-form');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+  
+    chatForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = userInput.value.trim();
+  if (!msg) return;
+
+  chatBox.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+  userInput.value = '';
+
+  // 👇 Show typing indicator
+  const typingIndicator = document.getElementById('typing-indicator');
+  typingIndicator.style.display = 'block';
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  const res = await fetch('/get', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ msg })
+  });
+
+  const data = await res.json();
+
+  // 👇 Hide typing indicator
+  typingIndicator.style.display = 'none';
+
+  chatBox.innerHTML += `<div class="chat-msg bot">${data.reply}</div>`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  updateChatboxEmotionColor(data.emotion || "neutral");
+});
+
+  
+    function updateChatboxEmotionColor(emotion) {
+      const emotionColors = {
+        "sadness": "#85B6FF",
+        "joy": "#FFF176",
+        "anger": "#FF6B6B",
+        "fear": "#B39DDB",
+        "surprise": "#FFB74D",
+        "love": "#80DEEA",
+        "neutral": "#F7ECF9"
+      };
+  
+      const color = emotionColors[emotion] || emotionColors["neutral"];
+      document.getElementById("chat-box").style.backgroundColor = color;
+    }
+  </script>
+  
+</body>
+</html>
