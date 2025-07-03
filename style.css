@@ -62,23 +62,48 @@ nav a:hover {
   color: var(--accent-hover);
 }
 
-
 /*Hero Section*/
 .hero {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: center;
   padding: 2rem 4rem;
   min-height: 80vh;
-  padding-top:150px;
+  padding-top: 60px;
+}
+
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding-top:130px;
+
 }
 
 .hero-text {
   max-width: 50%;
   animation: slideInLeft 1s ease forwards;
   opacity: 0;
+  padding-top:10px;
 }
+
+.hero-board {
+  flex: 1;
+  max-width: 500px;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.20);
+  margin-right:50px;
+  animation: slideInRight 1s ease forwards;
+  opacity: 0;
+}
+
 
 .hero-text h1 {
   font-size: 3rem;
@@ -125,6 +150,13 @@ nav a:hover {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cta-btn:hover,
+.chat-input button:hover {
+  background-color: var(--accent-hover);
+  transform: scale(1.05);
+  color: #fff;
 }
 
 .cta-btn:hover,
@@ -193,7 +225,7 @@ pre:hover {
 .chat-container {
   width: 90%;
   max-width: 900px;
-  min-height: 500px; /* 👈 Ensures proper vertical space */
+  min-height: 500px;
   margin: 6rem auto;
   background: white;
   border-radius: 1rem;
@@ -203,24 +235,22 @@ pre:hover {
   overflow: hidden;
   border: 1px solid #e0e0e0;
   margin-top:10rem;
+  margin-bottom:20px;
 }
 
 /* Chat Box */
 .chat-box {
   padding: 2rem;
-  height: 450px; /* 👈 you can tweak this */
+  height: 450px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
   background: white;
-
-  /* Add nice scrollbar */
   scrollbar-width: thin;
   scrollbar-color: var(--accent-color) #e0e0e0;
 }
 
-/* For Webkit browsers (Chrome, Edge, Safari) */
 .chat-box::-webkit-scrollbar {
   width: 8px;
 }
@@ -236,7 +266,6 @@ pre:hover {
   border: 2px solid #f0f0f0;
 }
 
-/* Message Bubble */
 .chat-msg {
   max-width: 75%;
   padding: 1rem 1.4rem;
@@ -246,17 +275,15 @@ pre:hover {
   animation: slideInUp 0.6s ease-in-out;
 }
 
-/* Name above message */
 .chat-msg .name {
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 0.3rem;
 }
 
-/* User message (You:) */
 .user {
   align-self: flex-end;
-  background-color: var(--accent-color); /* purple */
+  background-color: var(--accent-color);
   color: #fff;
   border-top-right-radius: 0.2rem;
 }
@@ -265,7 +292,6 @@ pre:hover {
   color: #dcd5fd;
 }
 
-/* Bot message (Aasha:) */
 .bot {
   align-self: flex-start;
   background-color: #f2f2f2;
@@ -274,10 +300,9 @@ pre:hover {
 }
 
 .bot .name {
-  color: var(--accent-color); /* same purple */
+  color: var(--accent-color);
 }
 
-/* Typing animation */
 .typing-indicator {
   font-style: italic;
   font-size: 0.9rem;
@@ -286,7 +311,6 @@ pre:hover {
   animation: blink 1.2s infinite;
 }
 
-/* Input section */
 .chat-input {
   display: flex;
   padding: 1rem;
@@ -294,7 +318,6 @@ pre:hover {
   background-color: white;
 }
 
-/* Textbox */
 .chat-input input {
   flex: 1;
   padding: 0.9rem 1.2rem;
@@ -310,11 +333,10 @@ pre:hover {
   border-color: var(--accent-color);
 }
 
-/* SEND Button — now square with rounded corners */
 .chat-input button {
   margin-left: 1rem;
   padding: 0.9rem 1rem;
-  border-radius: 0.5rem; /* square but rounded */
+  border-radius: 0.5rem;
   background-color: var(--accent-color);
   color: white;
   border: none;
@@ -332,21 +354,15 @@ pre:hover {
 }
 
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes blink {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
-/*Headings & Lists*/
+
 h2, h3 {
   color: var(--accent-color);
   margin-top: 1.5rem;
@@ -370,14 +386,12 @@ ul li::marker {
   color: var(--accent-color);
 }
 
-/*Legal Pages (pre tags)*/
 pre {
   white-space: pre-wrap;
   font-size: 1rem;
   line-height: 1.8;
 }
 
-/*Animations*/
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(10px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -393,12 +407,6 @@ pre {
   100% { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes slideInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-/*Responsive Design*/
 @media (max-width: 768px) {
   .hero {
     flex-direction: column;
@@ -455,4 +463,64 @@ pre {
   to { opacity: 1; }
 }
 
+/* ✨ New Styles for Emotion Swatches */
+#interactive-section {
+  max-width: 900px;
+  margin: 5rem auto 2rem;
+  text-align: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.emotion-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.emotion-swatch {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #2d2a4a;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.emotion-swatch:hover {
+  transform: scale(1.05);
+}
+
+#emotion-name {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent-color);
+}
+
+#emotion-response {
+  font-size: 1rem;
+  color: var(--text-color);
+  max-width: 600px;
+  margin: 0 auto 1rem;
+}
+
+.kindness-box {
+  margin-top: 2rem;
+}
+
+#kindness-quote {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #4d4d4d;
+  font-weight: 400;
+}
 
