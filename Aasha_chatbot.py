@@ -14,13 +14,13 @@ emotion_classifier = pipeline(
 
 # Emotion → color map (can be ignored for now)
 emotion_color_map = {
-    "sadness": "#85B6FF",   # More vivid blue
-    "joy": "#FFF176",       # Brighter yellow
-    "anger": "#FF6B6B",     # Vivid red
-    "fear": "#B39DDB",      # Richer lavender
-    "surprise": "#FFB74D",  # Strong orange
-    "love": "#80DEEA",       # Bright aqua
-    "neutral": "#F7ECF9"     # White with tint of lavender
+    "sadness": "#77b1f3",   # More vivid blue
+    "joy": "#ffe344",       # Brighter yellow
+    "anger": "#ff6868",     # Vivid red
+    "fear": "#d7a1ec",      # Richer lavender
+    "surprise": "#FFA07A",  # Strong orange
+    "love": "#FF69B4",       # Bright aqua
+    "neutral": "#00C897"     # White with tint of lavender
 }
 
 # Greeting list
@@ -150,3 +150,4 @@ def aasha_chatbot(user_input):
         return response.text.strip()
     except Exception as e:
         return "Oops, I’m having trouble replying right now. Please try again later."
+
