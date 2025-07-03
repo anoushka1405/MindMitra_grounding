@@ -1,7 +1,7 @@
 # MannMitra 🧠
 *A Conversational Mental Health Assistant*
 
-MannMitra is a simple AI-powered chatbot designed to provide empathetic and supportive conversations to individuals dealing with stress or anxiety. Built as part of the IGDTUW-Sansoftech Generative AI Internship Capstone, it uses state-of-the-art language models to make mental wellness support more accessible.
+MannMitra is a simple AI-powered chatbot designed to provide empathetic and supportive conversations to individuals dealing with stress or anxiety. Built as part of the IGDTUW-Sansoftech Generative AI Internship Capstone, it aims to make mental wellness support more accessible.
 
 ## 🌟 Objectives
 
@@ -12,7 +12,7 @@ MannMitra is a simple AI-powered chatbot designed to provide empathetic and supp
 ## 🛠 Tech Stack
 
 - **Python** & **Flask** (Web App)
-- **OpenAI GPT API** (Chat responses)
+- **Gemeni API** (Chat responses)
 - **Hugging Face Transformers** (Emotion detection)
 - **Heroku** (Deployment)
 
@@ -26,7 +26,7 @@ MannMitra is a simple AI-powered chatbot designed to provide empathetic and supp
 ## 📂 Project Structure
 
 - `app.py` — Flask backend
-- `templates/` — HTML (Jinja2)
+- `templates/` — HTML 
 - `ml/emotion_detector.py` — HuggingFace integration
 - `static/` — CSS styling
 
