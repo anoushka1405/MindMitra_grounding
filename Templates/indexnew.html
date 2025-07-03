@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mann Mitra | Your Mental Health Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h2>Mann Mitra</h2>
+    </div>
+    <nav class="navbar">
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('services') }}">Services</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content" style="max-width: 1500px;">
+      <!-- Hero Text -->
+      <div class="hero-text">
+        <h1 style="font-size: 50px;">Welcome to Mann Mitra</h1>
+        <h2>Your Friendly Mental Health Companion</h2>
+        <p>
+          Feeling stressed, anxious, or just need someone to talk to? Aasha is your private,
+          24/7 AI-powered mental health assistant that offers comforting conversations whenever
+          you need emotional support.
+        </p>
+        <button class="cta-btn" onclick="document.getElementById('chat').scrollIntoView({ behavior: 'smooth' });">Chat Now</button>
+      </div>
+
+      <!-- Emotion Swatches on the Side -->
+      <div class="hero-board">
+        <h3 style="text-align:center; padding-bottom:40px; font-size:22px">How are you feeling today?</h3>
+        <div class="emotion-board">
+          <div class="emotion-swatch" style="background-color: #6baffd" data-emotion="sadness">Sadness</div>
+          <div class="emotion-swatch" style="background-color: #ffe96e" data-emotion="joy">Joy</div>
+          <div class="emotion-swatch" style="background-color: #f36565" data-emotion="anger">Anger</div>
+          <div class="emotion-swatch" style="background-color: #c36cfa" data-emotion="fear">Fear</div>
+          <div class="emotion-swatch" style="background-color: #f8c66a" data-emotion="surprise">Surprise</div>
+          <div class="emotion-swatch" style="background-color: #f64e86" data-emotion="love">Love</div>
+          <div class="emotion-swatch" style="background-color: #42d140" data-emotion="neutral">Neutral</div>
+        </div>
+
+        <div class="emotion-info">
+          <h4 id="emotion-name"></h4>
+          <p id="emotion-response"></p>
+        </div>
+
+        <div class="kindness-box" style="text-align: center; margin-top:6px;">
+          <button id="kindness-btn">🌼 Need a little kindness?</button>
+          <p id="kindness-quote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="chat" class="chat-container">
+    <div class="chat-box" id="chat-box">
+      <div class="chat-msg bot"><strong>Aasha:</strong> Hi, I’m Aasha. What’s on your mind today?</div>
+    </div>
+    <div class="typing-indicator" id="typing-indicator" style="display: none;">
+      Aasha is typing<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+    </div>    
+    <form class="chat-input" id="chat-form">
+      <input type="text" id="user-input" placeholder="Type your message..." required />
+      <button type="submit">Send</button>
+    </form>
+  </section>
+
+  <script>
+    const chatForm = document.getElementById('chat-form');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+
+    const emotionResponses = {
+      joy: "I'm truly happy with you — moments like this are precious.",
+      sadness: "I'm holding space for all the heaviness you're carrying right now.",
+      anger: "Your frustration is valid and understandable.",
+      fear: "It’s okay to feel scared — I’m here and you’re not alone in this.",
+      surprise: "That unexpected moment can really shake us.",
+      love: "That warm feeling is a beautiful part of your day.",
+      neutral: "I’m here, right with you — whatever you’re feeling is okay."
+    };
+
+    document.querySelectorAll('.emotion-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const emotion = swatch.getAttribute('data-emotion');
+        document.getElementById('emotion-name').textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+        document.getElementById('emotion-response').textContent = emotionResponses[emotion];
+      });
+    });
+
+    document.getElementById("kindness-btn").addEventListener("click", () => {
+      const quotes = [
+        "You’re doing the best you can — and that’s something to honor.",
+        "It’s okay to rest. You deserve kindness, even from yourself.",
+        "Whatever you’re feeling, it’s human. And you’re not alone.",
+        "You don’t have to be ‘on’ all the time. Just being is enough.",
+        "Let’s slow down. One deep breath, right here with me."
+      ];
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("kindness-quote").textContent = quote;
+    });
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = userInput.value.trim();
+      if (!msg) return;
+
+      // ✅ Corrected line: wrap HTML in backticks
+      chatBox.innerHTML += `<div class="chat-msg user"><strong>You:</strong> ${msg}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+      userInput.value = '';
+
+      const typingIndicator = document.getElementById('typing-indicator');
+      typingIndicator.style.display = 'block';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch('/get', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ msg })
+        });
+
+        const data = await res.json();
+
+        typingIndicator.style.display = 'none';
+
+        chatBox.innerHTML += `<div class="chat-msg bot"><strong>Aasha:</strong> ${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        updateChatboxEmotionColor(data.emotion || "neutral");
+      } catch (error) {
+        typingIndicator.style.display = 'none';
+        hatBox.innerHTML += `<div class="chat-msg bot"><strong>Aasha:</strong> Oops! Something went wrong.</div>`;
+      }
+    });
+
+    function updateChatboxEmotionColor(emotion) {
+      const emotionColors = {
+        "sadness": "#6baffd",
+        "joy": "#ffe96e",
+        "anger": "#f36565",
+        "fear": "#c36cfa",
+        "surprise": "#f8c66a",
+        "love": "#f64e86",
+        "neutral": "#42d140"
+      };
+
+      const color = emotionColors[emotion] || emotionColors["neutral"];
+      document.getElementById("chat-box").style.backgroundColor = color;
+    }
+  </script>
+</body>
+</html>
