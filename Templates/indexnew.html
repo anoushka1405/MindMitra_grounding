@@ -6,21 +6,26 @@
   <title>Mann Mitra | Your Mental Health Companion</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header>
     <div class="logo">
       <h2>Mann Mitra</h2>
     </div>
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Main Navigation">
       <a href="{{ url_for('home') }}">Home</a>
       <a href="{{ url_for('about') }}">About</a>
       <a href="{{ url_for('services') }}">Services</a>
       <a href="{{ url_for('contact') }}">Contact</a>
     </nav>
   </header>
+
+  <div class="dark-mode-toggle">
+    <label for="darkModeSwitch">🌙</label>
+    <input type="checkbox" id="darkModeSwitch" />
+  </div>
 
   <section class="hero">
     <div class="hero-content" style="max-width: 1500px;">
@@ -68,141 +73,36 @@
       Aasha is typing<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
     </div>    
     <form class="chat-input" id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message..." required />
-      <button type="submit" id="send-button" title="Send Message">
-        <i class="fas fa-paper-plane"></i>
-      </button>
+      <input type="text" id="user-input" placeholder="Type your message..." required aria-label="User message input" />
+      <button type="button" onclick="startListening()" aria-label="Start voice input">🎙</button>
+      <button type="submit" aria-label="Send message">Send</button>
     </form>
   </section>
 
-  <script>
-    const chatForm = document.getElementById('chat-form');
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
-    const typingIndicator = document.getElementById('typing-indicator');
+  <div style="text-align:center; margin-bottom: 1rem;">
+    <label for="voiceSelect" style="font-weight:500;">🎤 Choose Aasha’s Voice:</label>
+    <select id="voiceSelect" style="margin-left: 0.5rem; padding: 0.4rem 1rem; border-radius: 0.5rem; min-width: 300px;"></select>
+  </div>
 
-    const emotionResponses = {
-      joy: "I'm truly happy with you — moments like this are precious.",
-      sadness: "I'm holding space for all the heaviness you're carrying right now.",
-      anger: "Your frustration is valid and understandable.",
-      fear: "It’s okay to feel scared — I’m here and you’re not alone in this.",
-      surprise: "That unexpected moment can really shake us.",
-      love: "That warm feeling is a beautiful part of your day.",
-      neutral: "I’m here, right with you — whatever you’re feeling is okay."
-    };
+  <div class="extra" style="display: flex; gap: 1rem;">
+    <div>
+      <button id="restart-btn" onclick="restartChat()">🔁 Restart</button>
+    </div>
+    <div class="extra2" style="display: flex; align-items: center; gap: 1rem;margin-left:24rem">
+      <div>
+        <input type="checkbox" id="rememberToggle" />
+        <label for="rememberToggle">🧠 Remember my session</label>
+      </div>
 
-    document.querySelectorAll('.emotion-swatch').forEach(swatch => {
-      swatch.addEventListener('click', () => {
-        const emotion = swatch.getAttribute('data-emotion');
-        document.getElementById('emotion-name').textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
-        document.getElementById('emotion-response').textContent = emotionResponses[emotion];
-      });
-    });
-
-    document.getElementById("kindness-btn").addEventListener("click", () => {
-      const quotes = [
-        "You’re doing the best you can — and that’s something to honor.",
-        "It’s okay to rest. You deserve kindness, even from yourself.",
-        "Whatever you’re feeling, it’s human. And you’re not alone.",
-        "You don’t have to be ‘on’ all the time. Just being is enough.",
-        "Let’s slow down. One deep breath, right here with me."
-      ];
-      const quote = quotes[Math.floor(Math.random() * quotes.length)];
-      document.getElementById("kindness-quote").textContent = quote;
-    });
-
-    function appendMessage(sender, message) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('chat-msg');
-      messageDiv.classList.add(sender === 'user' ? 'user' : 'bot');
-      messageDiv.innerHTML = `<strong>${sender === 'user' ? 'You' : 'Aasha'}:</strong> ${message}`;
-      chatBox.appendChild(messageDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function triggerCelebrationAnimation() {
-      const colors = ['color1', 'color2', 'color3', 'color4'];
-      for (let i = 0; i < 25; i++) {
-        const balloon = document.createElement("div");
-        balloon.classList.add("balloon");
-        balloon.classList.add(colors[Math.floor(Math.random() * colors.length)]);
-        balloon.style.left = Math.random() * 100 + "vw";
-        balloon.style.animationDuration = 3 + Math.random() * 3 + "s";
-        document.body.appendChild(balloon);
-        setTimeout(() => balloon.remove(), 7000);
-      }
-    }
-
-    function triggerConfetti() {
-      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-    }
-
-    function triggerHearts() {
-      for (let i = 0; i < 20; i++) {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.textContent = "❤️";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.animationDuration = 3 + Math.random() * 3 + "s";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 6000);
-      }
-    }
-
-    chatForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = userInput.value.trim();
-      if (!msg) return;
-
-      appendMessage('user', msg);
-      userInput.value = '';
-      typingIndicator.style.display = 'block';
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      try {
-        const res = await fetch('/get', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ msg })
-        });
-
-        const data = await res.json();
-        typingIndicator.style.display = 'none';
-        appendMessage('aasha', data.reply);
-
-        if (data.celebration_type === "balloons") {
-          triggerCelebrationAnimation();
-        } else if (data.celebration_type === "confetti") {
-          triggerConfetti();
-        } else if (data.celebration_type === "hearts") {
-          triggerHearts();
-        }
-
-        updateChatboxEmotionColor(data.emotion || "neutral");
-
-        if (data.exit_intent) {
-          userInput.placeholder = "You can keep chatting if you’d like.";
-        }
-
-      } catch (error) {
-        typingIndicator.style.display = 'none';
-        appendMessage('aasha', "Oops! Something went wrong.");
-      }
-    });
-
-    function updateChatboxEmotionColor(emotion) {
-      const emotionColors = {
-        "sadness": "#6baffd",
-        "joy": "#ffe96e",
-        "anger": "#f36565",
-        "fear": "#c36cfa",
-        "surprise": "#f8c66a",
-        "love": "#f64e86",
-        "neutral": "#ffe4c4"
-      };
-
-      const color = emotionColors[emotion] || emotionColors["neutral"];
-      document.getElementById("chat-box").style.backgroundColor = color;
+      <div>
+        <input type="checkbox" id="ttsToggle" checked />
+        <label for="ttsToggle">🔊 Enable voice responses</label>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
     }
   </script>
 </body>
