@@ -52,7 +52,7 @@ def chat():
             reply, meta = first_message(user_message)
         else:
             if exit_intent:
-                reply = "I'm really glad we talked today. Thank you for visiting <strong>Mann Mitra</strong>. Please take care 💙"
+                reply = "I'm really glad we talked today. Thank you for visiting <strong>Mann Mitra</strong>Please take care 💙"
                 return jsonify({
                     "reply": reply,
                     "emotion": "neutral",
