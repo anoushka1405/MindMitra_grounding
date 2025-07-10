@@ -20,10 +20,10 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   transition: background-color 0.5s, color 0.5s;
-  padding-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
-/*Header & Navigation*/
+/Header & Navigation/
 header {
   position: fixed;
   top: 0;
@@ -62,7 +62,7 @@ nav a:hover {
   color: var(--accent-hover);
 }
 
-/*Hero Section*/
+/Hero Section/
 .hero {
   display: flex;
   flex-direction: row;
@@ -70,7 +70,7 @@ nav a:hover {
   justify-content: center;
   padding: 2rem 4rem;
   min-height: 80vh;
-  padding-top: 160px;
+  padding-top: 190px;
 }
 
 .hero-content {
@@ -136,7 +136,7 @@ nav a:hover {
   transform: scale(1.05);
 }
 
-/*Buttons*/
+/Buttons/
 .cta-btn,
 .chat-input button {
   background-color: var(--accent-color);
@@ -163,7 +163,7 @@ nav a:hover {
   color: #fff;
 }
 
-/*Container Styles*/
+/Container Styles/
 .container,
 .contact-container,
 pre {
@@ -195,7 +195,7 @@ pre:hover {
 .container section:nth-child(2) { animation-delay: 0.4s; }
 .container section:nth-child(3) { animation-delay: 0.6s; }
 
-/*Contact Section*/
+/Contact Section/
 .contact-title {
   font-size: 2rem;
   margin-bottom: 1.5rem;
@@ -217,12 +217,12 @@ pre:hover {
   text-decoration: underline;
 }
 
-/*Chatbot*/
+/Chatbot/
 /* Chatbot Container */
 .chat-container {
   width: 90%;
   max-width: 900px;
-  min-height: 500px;
+  min-height: 450px;
   margin: 6rem auto;
   background: white;
   border-radius: 1rem;
@@ -238,7 +238,7 @@ pre:hover {
 /* Chat Box */
 .chat-box {
   padding: 2rem;
-  height: 450px;
+  height: 400px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -590,7 +590,7 @@ pre {
     opacity: 0;
   }
 }
-/* ❤️ Heart Animation */
+/* ❤ Heart Animation */
 .heart {
   position: fixed;
   bottom: -40px;
@@ -610,4 +610,264 @@ pre {
     transform: translateY(-120vh) scale(1.4);
     opacity: 0;
   }
+}
+
+/* 🔊 Voice Controls */
+.voice-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.voice-controls label,
+.voice-controls select {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.voice-controls input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 0.4rem;
+  accent-color: var(--accent-color);
+}
+
+.voice-controls select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.voice-controls select:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+/* 🎙 Mic Button */
+#mic-btn {
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#mic-btn:hover {
+  background-color: #e35e2d;
+  transform: scale(1.05);
+}
+
+/* 🔁 Restart Button */
+#restart-btn {
+
+  background-color: #aaa;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+#restart-btn:hover {
+  background-color: #888;
+  transform: scale(1.05);
+}
+#mic-btn, #restart-btn {
+  background-color: var(--accent-color);
+}
+#mic-btn:hover, #restart-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Balloon Base */
+.balloon {
+  position: fixed;
+  bottom: -100px;
+  width: 40px;
+  height: 55px;
+  background-color: #ff6b6b;
+  border-radius: 50% 50% 45% 45%;
+  animation: floatUp 6s ease-in forwards;
+  z-index: 9999;
+  opacity: 0.95;
+  box-shadow: inset -5px -10px 10px rgba(255, 255, 255, 0.4),
+              2px 6px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1) rotate(-2deg);
+}
+
+/* Balloon Colors */
+.color1 { background: radial-gradient(circle at 30% 30%, #ff6b6b, #d94141); }
+.color2 { background: radial-gradient(circle at 30% 30%, #6bc9ff, #3498db); }
+.color3 { background: radial-gradient(circle at 30% 30%, #ffe66d, #f5c542); }
+.color4 { background: radial-gradient(circle at 30% 30%, #b08fff, #7d5fff); }
+
+/* Balloon Shine Highlight */
+.balloon::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 10px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  transform: rotate(-20deg);
+  z-index: 2;
+}
+
+/* Balloon String */
+.balloon::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 2px;
+  height: 50px;
+  background: #555;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* Animation Keyframes */
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0.95;
+  }
+  25% {
+    transform: translateY(-30vh) scale(1.05) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-60vh) scale(0.98) rotate(2deg);
+  }
+  75% {
+    transform: translateY(-90vh) scale(1.02) rotate(-1deg);
+  }
+  100% {
+    transform: translateY(-120vh) scale(1.1) rotate(0deg);
+    opacity: 0;
+  }
+}
+/* ❤ Heart Animation */
+.heart {
+  position: fixed;
+  bottom: -40px;
+  font-size: 32px;
+  animation-name: floatHearts;
+  animation-timing-function: ease-in;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+@keyframes floatHearts {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120vh) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* 🌙 Dark Mode Toggle */
+.dark-mode-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 9999;
+}
+.dark-mode-toggle label {
+  cursor: pointer;
+  font-size: 1.4rem;
+  user-select: none;
+}
+
+.dark-mode-toggle input[type="checkbox"] {
+  width: 40px;
+  height: 20px;
+  appearance: none;
+  background-color: #ccc;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dark-mode-toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: white;
+  top: 1px;
+  left: 1px;
+  transition: transform 0.3s;
+}
+
+.dark-mode-toggle input[type="checkbox"]:checked {
+  background-color: var(--accent-color);
+}
+
+.dark-mode-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+/* 🌚 Dark Mode Variables */
+body.dark-mode {
+  --bg-color: #1e1e2f;
+  --text-color: #f3f3f3;
+  --accent-color: #9f85ff;
+  --accent-hover: #c9b8ff;
+  --bot-color: #2e2e3e;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+body.dark-mode header {
+  background-color: #2a2a3f;
+}
+
+body.dark-mode .chat-container,
+body.dark-mode .container,
+body.dark-mode .contact-container,
+body.dark-mode .chat-box,
+body.dark-mode .hero-board {
+  background-color: #2e2e3e;
+  color: var(--text-color);
+}
+
+body.dark-mode .chat-input input {
+  background-color: #444;
+  border-color: #666;
+  color: white;
+}
+
+body.dark-mode .chat-input input:focus {
+  border-color: var(--accent-color);
+}
+
+body.dark-mode .bot {
+  background-color: #393955;
+  color: white;
+}
+
+body.dark-mode .chat-box::-webkit-scrollbar-thumb {
+  background-color: var(--accent-hover);
 }
