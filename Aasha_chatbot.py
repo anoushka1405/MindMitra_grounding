@@ -230,7 +230,7 @@ Reply as Aasha only — no markdown, no formatting. Your voice is tender, calm, 
         return "Hmm, something got tangled in my thoughts. Can we try that again?"
 
 # 🧪 CLI test mode
-if _name_ == "_main_":
+if __name__ == "__main__":
     print("Hi, I’m Aasha. What’s on your mind today?")
     user_input = input("You: ")
     print("Aasha:", first_message(user_input))
