@@ -23,7 +23,7 @@ body {
   padding-bottom: 1rem;
 }
 
-/Header & Navigation/
+/*Header & Navigation*/
 header {
   position: fixed;
   top: 0;
@@ -62,7 +62,7 @@ nav a:hover {
   color: var(--accent-hover);
 }
 
-/Hero Section/
+/*Hero Section*/
 .hero {
   display: flex;
   flex-direction: row;
@@ -136,7 +136,7 @@ nav a:hover {
   transform: scale(1.05);
 }
 
-/Buttons/
+/*Buttons*/
 .cta-btn,
 .chat-input button {
   background-color: var(--accent-color);
@@ -163,7 +163,7 @@ nav a:hover {
   color: #fff;
 }
 
-/Container Styles/
+/*Container Styles*/
 .container,
 .contact-container,
 pre {
@@ -195,7 +195,7 @@ pre:hover {
 .container section:nth-child(2) { animation-delay: 0.4s; }
 .container section:nth-child(3) { animation-delay: 0.6s; }
 
-/Contact Section/
+/*Contact Section*/
 .contact-title {
   font-size: 2rem;
   margin-bottom: 1.5rem;
@@ -217,7 +217,7 @@ pre:hover {
   text-decoration: underline;
 }
 
-/Chatbot/
+/*Chatbot*/
 /* Chatbot Container */
 .chat-container {
   width: 90%;
