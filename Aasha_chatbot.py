@@ -1,5 +1,6 @@
-import os
+aasha_chatbot.py file import os
 import google.generativeai as genai
+from langdetect import detect
 from transformers import pipeline
 import random
 import json
@@ -12,6 +13,12 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # 🎯 Gemini model with memory
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 aasha_session = model.start_chat(history=[])
+
+translator = pipeline("translation", model="Helsinki-NLP/opus-mt-hi-en")
+
+def translate_to_english(text):
+    translated = translator(text)[0]['translation_text']
+    return translated
 
 
 # 🧠 Emotion detection pipeline
@@ -113,21 +120,25 @@ def match_faq(user_input):
                 return entry["answer"]
     return None 
 
-# 🧠 Emotion label detector
 def get_emotion_label(text):
     try:
-        result = emotion_classifier(text)
+        lang = detect(text)
+        print(f"🌍 Detected language: {lang}")
 
-        # Check for both flat and nested list output
+        # Translate if not English
+        if lang != "en":
+            print("🌐 Translating to English...")
+            text = translate_to_english(text)
+
+        result = emotion_classifier(text, return_all_scores=True)[0]
+
         if isinstance(result, list):
-            # Case: [[{'label': 'joy'}]]
-            if isinstance(result[0], list) and 'label' in result[0][0]:
-                label = result[0][0]['label'].lower()
-            # Case: [{'label': 'joy'}]
-            elif isinstance(result[0], dict) and 'label' in result[0]:
-                label = result[0]['label'].lower()
-            else:
-                label = "neutral"
+            top_emotion = max(result, key=lambda x: x['score'])
+            label = top_emotion['label'].lower()
+
+            # Optional: Remap joy → love based on loving words
+            if label == "joy" and any(word in text.lower() for word in ["love", "loved", "loving", "dear", "affection"]):
+                label = "love"
 
             print("🧠 Emotion detected:", label)
             return label
@@ -136,6 +147,8 @@ def get_emotion_label(text):
         print("Emotion detection error:", e)
 
     return "neutral"
+
+
 
 
 # 🌱 First interaction with Aasha
@@ -200,7 +213,7 @@ Here’s the user’s message:
 Please:
 - Respond in 3 to 4 short, natural sentences.
 - Acknowledge what they’re feeling now.
-- Refer gently to what they shared earlier, *if relevant*.
+- Refer gently to what they shared earlier, if relevant.
 - Offer 1 or 2 soft, specific ideas — emotional, creative, or grounding.
 - End with a warm but non-pushy invitation to keep talking (“I’m here if you want to share more.”)
 - Avoid clinical language or repeating ideas unless the user directly brings them up.
@@ -217,7 +230,7 @@ Reply as Aasha only — no markdown, no formatting. Your voice is tender, calm, 
         return "Hmm, something got tangled in my thoughts. Can we try that again?"
 
 # 🧪 CLI test mode
-if __name__ == "__main__":
+if _name_ == "_main_":
     print("Hi, I’m Aasha. What’s on your mind today?")
     user_input = input("You: ")
     print("Aasha:", first_message(user_input))
