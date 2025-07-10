@@ -1,21 +1,21 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-from Aasha_chatbot import aasha_chatbot, get_emotion_label, build_aasha_prompt
+from Aasha_chatbot import first_message, continue_convo, get_emotion_label, is_exit_intent
 
-# Load API key from .env
+# Load env
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-print("🔑 Google API Key loaded is:", GOOGLE_API_KEY)
+#print("🔑 Google API Key loaded is:", GOOGLE_API_KEY)
 
 # Configure Gemini
 genai.configure(api_key=GOOGLE_API_KEY)
 
-# Set up Flask
 app = Flask(__name__)
+app.secret_key = "aasha-is-kind"
 
-# ROUTES FOR EACH PAGE
+
 @app.route("/")
 def home():
     return render_template("indexnew.html")
@@ -43,22 +43,38 @@ def termsofuse():
 @app.route("/get", methods=["POST"])
 def chat():
     user_message = request.form["msg"]
-    emotion = get_emotion_label(user_message)
-    prompt = build_aasha_prompt(user_message, emotion)
+    exit_intent = is_exit_intent(user_message)
 
     try:
-        model = genai.GenerativeModel("models/gemini-2.5-flash")
-        response = model.generate_content(prompt)
+        if "chat_started" not in session:
+            session["chat_started"] = True
+            reply, meta = first_message(user_message)
+        else:
+            if exit_intent:
+                reply = "I'm really glad we talked today. Thank you for visiting <strong>Mann Mitra</strong>Please take care 💙"
+                return jsonify({
+                    "reply": reply,
+                    "emotion": "neutral",
+                    "exit_intent": True,
+                    "celebration_type": None
+                })
+            else:
+                reply, meta = continue_convo(user_message)
+
         return jsonify({
-            "reply": response.text.strip(),
-            "emotion": emotion
+            "reply": reply,
+            "emotion": meta["emotion"],
+            "exit_intent": exit_intent,
+            "celebration_type": meta["celebration_type"]
         })
+
     except Exception as e:
+        print("💥 Error:", e)
         return jsonify({
             "reply": "Oops, I’m having trouble replying right now. Please try again later.",
-            "emotion": "neutral"
+            "emotion": "neutral",
+            "exit_intent": False,
+            "celebration_type": None
         })
-
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5050)
-
+    app.run(debug=True)
