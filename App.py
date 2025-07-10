@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
+from flask import make_response
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -12,7 +13,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 # Configure Gemini
 genai.configure(api_key=GOOGLE_API_KEY)
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = "aasha-is-kind"
 
 
@@ -51,7 +52,7 @@ def chat():
             reply, meta = first_message(user_message)
         else:
             if exit_intent:
-                reply = "I'm really glad we talked today. Thank you for visiting <strong>Mann Mitra</strong>Please take care 💙"
+                reply = "I'm really glad we talked today. Thank you for visiting <strong>Mann Mitra</strong>. Please take care 💙"
                 return jsonify({
                     "reply": reply,
                     "emotion": "neutral",
@@ -76,5 +77,14 @@ def chat():
             "exit_intent": False,
             "celebration_type": None
         })
-if __name__ == "__main__":
+
+
+@app.route('/clear_session', methods=['POST'])
+def clear_session():
+    session.clear()
+    resp = make_response('', 204)
+    resp.set_cookie('session', '', expires=0)
+    return resp
+
+if _name_ == "_main_":
     app.run(debug=True)
