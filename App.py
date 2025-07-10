@@ -13,7 +13,7 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 # Configure Gemini
 genai.configure(api_key=GOOGLE_API_KEY)
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = "aasha-is-kind"
 
 
@@ -86,5 +86,5 @@ def clear_session():
     resp.set_cookie('session', '', expires=0)
     return resp
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(debug=True)
