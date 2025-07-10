@@ -1,4 +1,4 @@
-aasha_chatbot.py file import os
+import os
 import google.generativeai as genai
 from langdetect import detect
 from transformers import pipeline
