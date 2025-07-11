@@ -1,3 +1,12 @@
+window.addEventListener("load", () => {
+  const { jsPDF } = window.jspdf;
+  window.jsPDF = jsPDF;  // ✅ Save it globally so you can use it in any function
+});
+
+
+const { jsPDF } = window.jspdf;
+
+
 const chatForm = document.getElementById('chat-form');
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
@@ -56,12 +65,19 @@ chatForm.addEventListener('submit', async (e) => {
   try {
     const res = await fetch('/get', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ msg })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ msg })
     });
+    
 
     const data = await res.json();
     typingIndicator.style.display = 'none';
+
+    if (data.trigger_grounding) {
+      showGroundingUI();
+      return;
+    }
+    
 
     chatBox.innerHTML += `<div class="chat-msg bot"><strong>Aasha:</strong> ${data.reply}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -282,4 +298,38 @@ const toggle = document.getElementById('darkModeSwitch');
   window.addEventListener("beforeunload", () => {
     synth.cancel();
   });
+  
+  function downloadChat() {
+    const chatBox = document.getElementById('chat-box');
+    let text = '';
+  
+    chatBox.querySelectorAll('.chat-msg').forEach(msg => {
+      text += msg.textContent.trim() + '\n\n';
+    });
+  
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'chat.txt';
+    a.click();
+  }
+  
+  function downloadChatAsPDF() {
+    if (typeof jsPDF === "undefined") {
+      alert("PDF library failed to load. Please try again later.");
+      return;
+    }
+  
+    const chatBox = document.getElementById('chat-box');
+    let text = '';
+  
+    chatBox.querySelectorAll('.chat-msg').forEach(msg => {
+      text += msg.textContent.trim() + '\n\n';
+    });
+  
+    const doc = new jsPDF();
+    const lines = doc.splitTextToSize(text, 180);
+    doc.text(lines, 10, 10);
+    doc.save('chat.pdf');
+  }
   

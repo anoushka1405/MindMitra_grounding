@@ -43,7 +43,23 @@ def termsofuse():
 
 @app.route("/get", methods=["POST"])
 def chat():
-    user_message = request.form["msg"]
+    user_message = request.json["msg"]  # If you switched to JSON
+
+    GROUNDING_KEYWORDS = [
+        "panic", "overwhelmed", "can't breathe", "too much", "freaking out",
+        "shaking", "terrified", "dizzy", "spiraling", "suffocating"
+    ]
+
+    if any(word in user_message.lower() for word in GROUNDING_KEYWORDS):
+        print("🫁 Grounding mode triggered")
+        return jsonify({
+            "reply": "It sounds like you're feeling overwhelmed. Let's take a moment to breathe together 💙",
+            "emotion": "fear",
+            "exit_intent": False,
+            "celebration_type": None,
+            "trigger_grounding": True
+        })
+
     exit_intent = is_exit_intent(user_message)
 
     try:

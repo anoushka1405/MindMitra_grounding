@@ -4,16 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mann Mitra | Your Mental Health Companion</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='grounding.css') }}">
+  <style>
+    .chat-container, .chat-controls {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .chat-input button {
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+    }
+    .chat-input button[type="submit"] {
+      background-color: #6b4eff;
+      color: white;
+    }
+    .chat-controls label {
+      display: inline-block;
+      margin: 0.5rem 1rem 0.5rem 0;
+    }
+    .button-row {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .button-row button {
+      margin: 0.25rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+    }
+    .restart-btn {
+      background-color: #6b4eff;
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <div class="logo">
-      <h2>Mann Mitra</h2>
-    </div>
+    <div class="logo"><h2>Mann Mitra</h2></div>
     <nav class="navbar" aria-label="Main Navigation">
       <a href="{{ url_for('home') }}">Home</a>
       <a href="{{ url_for('about') }}">About</a>
@@ -28,8 +73,8 @@
   </div>
 
   <section class="hero">
-    <div class="hero-content" style="max-width: 1500px;">
-      <div class="hero-text">
+    <div class="hero-content" style="max-width: 1500px; display: flex; justify-content: space-between; gap: 3rem; flex-wrap: wrap;">
+      <div class="hero-text" style="flex: 1; min-width: 300px;">
         <h1 style="font-size: 50px;">Welcome to Mann Mitra</h1>
         <h2>Your Friendly Mental Health Companion</h2>
         <p>
@@ -40,7 +85,7 @@
         <button class="cta-btn" onclick="document.getElementById('chat').scrollIntoView({ behavior: 'smooth' });">Chat Now</button>
       </div>
 
-      <div class="hero-board">
+      <div class="hero-board" style="flex: 1; min-width: 300px;">
         <h3 style="text-align:center; padding-bottom:40px; font-size:22px">How are you feeling today?</h3>
         <div class="emotion-board">
           <div class="emotion-swatch" style="background-color: #6baffd" data-emotion="sadness">Sadness</div>
@@ -51,12 +96,10 @@
           <div class="emotion-swatch" style="background-color: #f64e86" data-emotion="love">Love</div>
           <div class="emotion-swatch" style="background-color: #ffe4c4" data-emotion="neutral">Neutral</div>
         </div>
-
         <div class="emotion-info">
           <h4 id="emotion-name"></h4>
           <p id="emotion-response"></p>
         </div>
-
         <div class="kindness-box" style="text-align: center; margin-top:6px;">
           <button id="kindness-btn">🌼 Need a little kindness?</button>
           <p id="kindness-quote"></p>
@@ -65,42 +108,63 @@
     </div>
   </section>
 
+  <button id="start-grounding-btn">🧘 Start Grounding Mode</button>
+  <button id="stop-grounding-btn" style="display:none;">❌ Stop Grounding</button>
+  
+
+  <!-- Chat Section -->
   <section id="chat" class="chat-container">
     <div class="chat-box" id="chat-box">
       <div class="chat-msg bot"><strong>Aasha:</strong> Hi, I’m Aasha. What’s on your mind today?</div>
     </div>
     <div class="typing-indicator" id="typing-indicator" style="display: none;">
       Aasha is typing<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
-    </div>    
+    </div>
     <form class="chat-input" id="chat-form">
-      <input type="text" id="user-input" placeholder="Type your message..." required aria-label="User message input" />
-      <button type="button" onclick="startListening()" aria-label="Start voice input">🎙</button>
-      <button type="submit" aria-label="Send message">Send</button>
+      <input type="text" id="user-input" placeholder="Type your message..." required />
+      <button type="button" onclick="startListening()">🎙</button>
+      <button type="submit">Send</button>
     </form>
   </section>
 
-  <div style="text-align:center; margin-bottom: 1rem;">
-    <label for="voiceSelect" style="font-weight:500;">🎤 Choose Aasha’s Voice:</label>
-    <select id="voiceSelect" style="margin-left: 0.5rem; padding: 0.4rem 1rem; border-radius: 0.5rem; min-width: 300px;"></select>
-  </div>
-
-  <div class="extra" style="display: flex; gap: 1rem;">
-    <div>
-      <button id="restart-btn" onclick="restartChat()">🔁 Restart</button>
+  <!-- Controls -->
+  <div class="chat-controls">
+    <div style="text-align:center;">
+      <label for="voiceSelect">🎤 Choose Aasha’s Voice:</label>
+      <select id="voiceSelect"></select>
     </div>
-    <div class="extra2" style="display: flex; align-items: center; gap: 1rem;margin-left:24rem">
-      <div>
-        <input type="checkbox" id="rememberToggle" />
-        <label for="rememberToggle">🧠 Remember my session</label>
-      </div>
 
-      <div>
-        <input type="checkbox" id="ttsToggle" checked />
-        <label for="ttsToggle">🔊 Enable voice responses</label>
-      </div>
+    <div style="text-align:center; margin-top:0.5rem;">
+      <label><input type="checkbox" id="rememberToggle" /> 🧠 Remember my session</label>
+      <label style="margin-left:1rem;"><input type="checkbox" id="ttsToggle" checked /> 🔊 Enable voice responses</label>
+    </div>
+
+    <div class="button-row">
+      <button onclick="downloadChat()">📥 Download as TXT</button>
+      <button onclick="downloadChatAsPDF()">📄 Download as PDF</button>
+      <button id="restart-btn" class="restart-btn" onclick="restartChat()">🔁 Restart</button>
     </div>
   </div>
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='grounding.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const startBtn = document.getElementById("start-grounding-btn");
+      if (startBtn) {
+        startBtn.addEventListener("click", () => {
+          window.showGroundingUI();
+        });
+      }
+    });
+
+    const stopBtn = document.getElementById("stop-grounding-btn");
+if (stopBtn) {
+  stopBtn.addEventListener("click", () => {
+    window.hideGroundingUI();
+  });
+}
+  </script>
 </body>
 </html>
-
