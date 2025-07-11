@@ -9,4 +9,6 @@ __pycache__/
 .env
 
 # Ignore VS Code settings (optional)
-.vscode/
+.vscode/.env
+.DS_Store
+Static/.DS_Store
