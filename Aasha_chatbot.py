@@ -73,6 +73,20 @@ def detect_celebration_type(message):
     if any(k in msg for k in ["birthday", "bday"]): return "balloons"
     return None
 
+INVITE_LINES = [
+    "I'm here if you want to share more.",
+    "Whenever you feel ready to talk more, I'm listening.",
+    "Feel free to open up as much or as little as you’d like.",
+    "Only if you want — I’m always here.",
+]
+
+SHORT_REACT = {
+    "joy": ["That sounds wonderful!", "That’s such good energy!", "So glad you’re feeling this!"],
+    "love": ["That warmth really comes through.", "What a lovely moment to hold onto.", "That's such a tender feeling."],
+    "surprise": ["That must’ve caught you off guard!", "Wow, I wasn’t expecting that either.", "Life’s full of little twists, isn’t it?"]
+}
+
+
 def get_emotion_label(text):
     try:
         # 🌍 Detect language
@@ -88,11 +102,28 @@ def get_emotion_label(text):
         else:
             print("✅ Using original text")
 
-        # 🎯 Get emotion predictions
-        raw_results = emotion_classifier(text)
-        results = raw_results[0] if isinstance(raw_results, list) and isinstance(raw_results[0], list) else raw_results
+        # 🔁 Early keyword override
+        text_lower = text.lower()
+        emotion_keywords = {
+            "sadness": ["sad", "grief", "loss", "hopeless", "down", "depressed", "cry"],
+            "joy": ["happy", "excited", "yay", "glad", "smile", "fun", "joy", "cheerful"],
+            "anger": ["angry", "mad", "furious", "rage", "irritated", "annoyed"],
+            "fear": ["anxious", "worried", "scared", "afraid", "panic", "nervous", "terrified"],
+            "love": ["love", "loved", "loving", "dear", "affection", "caring", "heartfelt"],
+            "surprise": ["shocked", "surprised", "wow", "unexpected", "can't believe"],
+            "neutral": ["okay", "fine", "meh", "nothing", "normal"]
+        }
 
-        # 🔄 Convert GoEmotions → Core 7
+        for core_emotion, keywords in emotion_keywords.items():
+            if any(word in text_lower for word in keywords):
+                print(f"🔁 Strong override to '{core_emotion}' based on keyword match")
+                return core_emotion
+
+        # 🎯 Get emotion predictions from GoEmotions
+        results = emotion_classifier(text)[0]
+
+
+        # 🔄 Convert GoEmotions → Core 7 categories
         core_scores = {}
         for r in results:
             label = r["label"].lower()
@@ -100,33 +131,13 @@ def get_emotion_label(text):
             core = GOEMOTION_TO_CORE.get(label, "neutral")
             core_scores[core] = core_scores.get(core, 0) + score
 
-        # 🎯 Pick top core emotion
+        # 🎯 Pick the top emotion
         top_emotion = max(core_scores.items(), key=lambda x: x[1])[0]
 
-        # 💖 Joy → Love override
-        love_keywords = ["love", "loved", "loving", "dear", "affection", "caring", "heartfelt"]
-        if top_emotion in ["joy", "neutral"] and any(word in text.lower() for word in love_keywords):
+        # 💖 Override to "love" if joyful text contains love-related words
+        if top_emotion in ["joy", "neutral"] and any(word in text_lower for word in emotion_keywords["love"]):
             print("💖 Overriding emotion to 'love' due to love-related words in joyful context")
             top_emotion = "love"
-
-        # 🔁 Final keyword override to prevent major misclassifications
-        emotion_keywords = {
-            "sadness": ["sad", "grief", "loss", "hopeless", "down", "depressed", "cry"],
-            "joy": ["happy", "excited", "yay", "glad", "smile", "fun", "joy", "cheerful"],
-            "anger": ["angry", "mad", "furious", "rage", "irritated", "annoyed"],
-            "fear": ["anxious", "worried", "scared", "afraid", "panic", "nervous", "terrified"],
-            "love": love_keywords,
-            "surprise": ["shocked", "surprised", "wow", "unexpected", "can't believe"],
-            "neutral": ["okay", "fine", "meh", "nothing", "normal"]
-        }
-
-        text_lower = text.lower()
-        for core_emotion, keywords in emotion_keywords.items():
-            if any(word in text_lower for word in keywords):
-                if core_emotion != top_emotion:
-                    print(f"🔁 Overriding emotion to '{core_emotion}' based on keywords")
-                    top_emotion = core_emotion
-                break
 
         print("🧠 Emotion detected:", top_emotion)
         return top_emotion
@@ -134,7 +145,6 @@ def get_emotion_label(text):
     except Exception as e:
         print("❌ Emotion error:", e)
         return "neutral"
-
 
 
 # First response
@@ -147,8 +157,17 @@ def first_message(user_input):
     emotion = get_emotion_label(user_input)
     celebration = detect_celebration_type(user_input)
 
+    # For light emotions → keep it brief and bright
+    if emotion in ["joy", "love", "surprise"]:
+        reaction = random.choice(SHORT_REACT[emotion])
+        suggestion = random.choice(emotion_responses[emotion]["ideas"])
+        invite = random.choice(INVITE_LINES)
+        response = f"{reaction} {suggestion}. {invite}"
+        return response, {"emotion": emotion, "celebration_type": celebration}
+
+    # For heavier emotions → use Gemini with detailed structure
     prompt = f'''
-You are Aasha, a deeply emotionally intelligent AI companion. 
+You are Aasha, a deeply emotionally intelligent AI companion.
 Speak with warmth, empathy, and clarity — like a close, thoughtful friend.
 
 This is the user's first message:
@@ -160,6 +179,7 @@ Please:
 - End with a soft invitation to share more, if they’d like
 - Keep the tone human, warm, not robotic
 - Never use endearments like "dear" or "sweetheart"
+- If the message is vague or low-detail, be brief
 '''
 
     try:
@@ -167,7 +187,7 @@ Please:
         return response.text.strip(), {"emotion": emotion, "celebration_type": celebration}
     except Exception as e:
         print("Gemini error:", e)
-        return "I’m here with you, but I’m having a little trouble responding right now."
+        return "I'm here with you, but something's a little off on my side. Want to try again?"
 
 # Ongoing conversation
 
@@ -179,6 +199,15 @@ def continue_convo(user_input):
     emotion = get_emotion_label(user_input)
     celebration = detect_celebration_type(user_input)
 
+    # For light emotions, skip Gemini to keep it snappy
+    if emotion in ["joy", "love", "surprise"]:
+        reflection = random.choice(SHORT_REACT[emotion])
+        suggestion = random.choice(emotion_responses[emotion]["ideas"])
+        invite = random.choice(INVITE_LINES)
+        response = f"{reflection} {suggestion}. {invite}"
+        return response, {"emotion": emotion, "celebration_type": celebration}
+
+    # For heavier or neutral feelings → use Gemini
     prompt = f'''
 You are Aasha — an emotionally intelligent AI companion who remembers past conversations and emotions.
 Your tone is warm, clear, and comforting — like a close friend who truly listens.
@@ -188,12 +217,18 @@ Here’s the user’s message:
 
 Please:
 - Respond in 3 to 4 short, natural sentences.
-- Acknowledge what they’re feeling now.
-- Refer gently to what they shared earlier, if relevant.
-- Offer 1 or 2 soft, specific ideas — emotional, creative, or grounding.
-- End with a warm but non-pushy invitation to keep talking ("I’m here if you want to share more.")
-- Avoid clinical language or repeating ideas unless the user brings them up.
-- Do not use words like "sweetheart" or "dear".
+- Acknowledge what they’re feeling now (even if it's vague or mixed).
+- If relevant, gently refer to earlier tone/emotion without sounding scripted.
+- Offer 1 or 2 soft, grounded suggestions or reflections.
+- End with a varied, warm invitation to keep talking (see examples below).
+- Avoid clinical language, repetitive advice, or endearments.
+
+Example invitations:
+"I’m here if you want to share more."
+"Only if you feel like it — I’m listening."
+"Let me know if anything else is on your mind."
+"Want to talk more about that?"
+"Totally okay if not, but I'm here."
 '''
 
     try:
@@ -202,6 +237,7 @@ Please:
     except Exception as e:
         print("Gemini error:", e)
         return "Hmm, something got tangled in my thoughts. Can we try that again?"
+
 
 # Exit detection (optional intent classifier)
 intent_classifier = pipeline("text-classification", model="bhadresh-savani/bert-base-uncased-emotion", top_k=1)
